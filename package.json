@@ -1,6 +1,9 @@
 {
   "name": "vite-react-storage-quota",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "Vannaravuth Yo <ravuthz@gmail.com> (https://ravuthz.github.io)",
+  "description": "Web Storage Quota",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

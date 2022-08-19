@@ -1,43 +1,52 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { useEffect, useState } from 'react';
+
+import './App.css';
+
+const ONE_MEG = 1000000;
+
+function formatToMB(val) {
+  const opts = {
+    maximumFractionDigits: 0,
+  };
+  let result;
+  try {
+    result = new Intl.NumberFormat('en-us', opts).format(val / ONE_MEG);
+  } catch (ex) {
+    result = Math.round(val / ONE_MEG);
+  }
+  return `${result} MB`;
+}
+
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const { quota, setQuota } = useState();
+  const { used, setUsed } = useState();
+  const { remained, setRemained } = useState();
+
+  const updateQuota = () => {
+    navigator.storage.estimate().then(({quota, usage }) => {
+      const remaining = quota - usage;
+      setQuota(quota);
+      setUsed(usage);
+      setRemained(remaining);
+      // elemQuota.textContent = formatToMB(storage.quota);
+      // elemUsed.textContent = formatToMB(storage.usage);
+      // elemRemaining.textContent = formatToMB(remaining);
+    }).catch((err) => {
+      console.error('Unable to update quota ', err);
+    });
+  }
+
+  useEffect(() => {
+    setTimeout(updateQuota(), 500);
+  }, []);
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.jsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+      <p>Quota: {formatToMB(quota)}</p>
+      <p>Used: {formatToMB(used)}</p>
+      <p>Remaining: {formatToMB(remained)}</p>
     </div>
   )
 }
